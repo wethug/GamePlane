@@ -20,6 +20,8 @@ public class MainActivity extends Activity implements Button.OnClickListener {
         int viewId = v.getId();
         if(viewId == R.id.btnGame){
             startGame();
+        }else if(viewId == R.id.btnQuit){
+            finish();
         }
     }
 
