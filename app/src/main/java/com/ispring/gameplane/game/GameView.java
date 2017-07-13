@@ -1,6 +1,8 @@
 package com.ispring.gameplane.game;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,9 +12,12 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 
+import com.ispring.gameplane.GameActivity;
 import com.ispring.gameplane.R;
 
 import java.util.ArrayList;
@@ -67,18 +72,23 @@ public class GameView extends View {
     private float touchX = -1;//触点的x坐标
     private float touchY = -1;//触点的y坐标
 
+    private Context context;
+
     public GameView(Context context) {
         super(context);
+        this.context = context;
         init(null, 0);
     }
 
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         init(attrs, 0);
     }
 
     public GameView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.context = context;
         init(attrs, defStyle);
     }
 
@@ -154,6 +164,30 @@ public class GameView extends View {
         }else if(status == STATUS_GAME_OVER){
             drawGameOver(canvas);
         }
+    }
+
+    //绘制结束游戏时的记录框
+    public void drawGameOver(){
+        AlertDialog.Builder customizeDialog =
+                new AlertDialog.Builder(this.context);
+        final View dialogView = LayoutInflater.from(this.context)
+                .inflate(R.layout.dialog_game_over, null);
+        customizeDialog.setTitle("请输入您的战机ID: ");
+        customizeDialog.setView(dialogView);
+        customizeDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 获取EditView中的输入内容
+                        EditText edit_text =
+                                (EditText) dialogView.findViewById(R.id.username);
+//                        Toast.makeText(GameView.this.context,
+//                                edit_text.getText().toString(),
+//                                Toast.LENGTH_SHORT).show();
+                        ((GameActivity)context).finish();
+                    }
+                });
+        customizeDialog.show();
     }
 
     //绘制运行状态的游戏
@@ -238,7 +272,8 @@ public class GameView extends View {
     //绘制结束状态的游戏
     private void drawGameOver(Canvas canvas){
         //Game Over之后只绘制弹出窗显示最终得分
-        drawScoreDialog(canvas, "重新开始");
+        drawGameOver();
+//        drawScoreDialog(canvas, "重新开始");
 
         if(lastSingleClickTime > 0){
             postInvalidate();
@@ -323,6 +358,7 @@ public class GameView extends View {
         paint.setColor(originalColor);
         paint.setStyle(originalStyle);
     }
+
 
     //绘制左上角的得分和左下角炸弹的数量
     private void drawScoreAndBombs(Canvas canvas){
@@ -545,11 +581,11 @@ public class GameView extends View {
                 //单击了“继续”按钮
                 resume();
             }
-        }else if(status == STATUS_GAME_OVER){
-            if(isClickRestartButton(x, y)){
-                //单击了“重新开始”按钮
-                restart();
-            }
+//        }else if(status == STATUS_GAME_OVER){
+//            if(isClickRestartButton(x, y)){
+//                //单击了“重新开始”按钮
+//                restart();
+//            }
         }
     }
 

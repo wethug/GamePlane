@@ -22,6 +22,9 @@ public class MainActivity extends Activity implements Button.OnClickListener {
             startGame();
         }else if(viewId == R.id.btnQuit){
             finish();
+        }else if(viewId == R.id.btnRank){
+            Intent intent = new Intent(MainActivity.this, RankActivity.class);
+            startActivity(intent);
         }
     }
 
